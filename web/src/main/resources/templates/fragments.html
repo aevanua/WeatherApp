@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head"></head>
+<body>
+
+<div th:fragment="forecastBlock(partOfDay, forecast)">
+    <h3 th:text="${partOfDay}"></h3>
+
+    <p th:if="${forecast.text != null}" th:text="${forecast.text}"></p>
+
+    <div th:if="${forecast.phenomenon != null}">
+        <span class="parameter-name">Phenomenon: </span>
+        <span th:text="${forecast.phenomenon}"></span>
+    </div>
+
+    <div th:if="${forecast.tempMin != null}">
+        <span class="parameter-name">Min Temperature: </span>
+        <span th:text="${forecast.tempMin}"></span>
+    </div>
+
+    <div th:if="${forecast.tempMax != null}">
+        <span class="parameter-name">Max Temperature: </span>
+        <span th:text="${forecast.tempMax}"></span>
+    </div>
+</div>
+
+</body>
+</html>

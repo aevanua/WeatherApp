@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Weather App</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}" />
+    <script type="text/javascript">
+        function redirectToPlace() {
+            let selectedPlace = document.getElementById("placeSearch").value;
+            if(selectedPlace) {
+                let currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('place', selectedPlace);
+                window.location.href = currentUrl.toString();
+            }
+        }
+    </script>
+</head>
+<body class="body-style">
+
+<div class="container-style">
+    <h1>Weather Forecast</h1>
+    <div class="forecast-selector-style">
+        <th:block th:each="dayForecast : ${dayForecasts}">
+            <div class="forecast-block-style">
+                <span th:if="${dayForecast.date == selectedDate}" th:text="${dayForecast.date}" class="selected-date-style"></span>
+                <a th:if="${dayForecast.date != selectedDate}" th:href="@{/(date=${dayForecast.date})}" th:text="${dayForecast.date}"></a>
+                <img th:src="@{/img/{icon}.png(icon=${dayForecast.phenomenon})}" alt="Weather Icon" class="forecast-image-style" />
+                <div class="preview">
+                    <p class="small-text-style">Min: <span th:text="${dayForecast.tempMin}"></span> °C</p>
+                    <p class="small-text-style">Max: <span th:text="${dayForecast.tempMax}"></span> °C</p>
+                </div>
+            </div>
+        </th:block>
+    </div>
+    <div th:if="${!dateIsValid}">
+        <p>No forecast for that date</p>
+    </div>
+    <div th:if="${dateIsValid}">
+        <div>
+            <div th:replace="fragments :: forecastBlock('Day', ${dayForecast})"></div>
+            <div th:replace="fragments :: forecastBlock('Night', ${nightForecast})"></div>
+        </div>
+
+        <div>
+            <h2> Search for forecast for your location</h2>
+            <form th:if="${!places.isEmpty()}" class="form-style">
+                <input type="text" id="placeSearch" name="place" list="placeList" placeholder="Search for a place" required class="input-style">
+                <datalist id="placeList">
+                    <option th:each="place : ${places}" th:value="${place}" th:text="${place}"></option>
+                </datalist>
+                <button type="button" onclick="redirectToPlace()" class="button-style">Search</button>
+            </form>
+            <p th:if="${places.isEmpty()}">No forecasts for particular locations for this date yet</p>
+        </div>
+
+        <div th:if="${selectedPlace != null && placeNightForecast == null}">
+            <p>No forecast for [[${selectedPlace}]]</p>
+        </div>
+
+        <div th:if="${selectedPlace != null && placeNightForecast != null}">
+            <h2>Forecast for [[${selectedPlace}]]</h2>
+            <div>
+                <div th:replace="fragments :: forecastBlock('Day', ${placeDayForecast})"></div>
+                <div th:replace="fragments :: forecastBlock('Night', ${placeNightForecast})"></div>
+            </div>
+        </div>
+
+        <div th:if="${peipsiNightForecast != null}">
+            <h2>Forecast for Peipsi</h2>
+            <div>
+                <div th:replace="fragments :: forecastBlock('Day', ${peipsiDayForecast})"></div>
+                <div th:replace="fragments :: forecastBlock('Night', ${peipsiNightForecast})"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
